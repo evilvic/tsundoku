@@ -5,17 +5,35 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
 
+package:
+  individually: true
+
 provider:
   name: aws
   runtime: nodejs10.x
+
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+  
+  enviroment:
+    BOOKS_TABLE: Books-${self:provider.stage}
+
   iamRoleStatements:
     - Effect: Allow
       Action:
         - codedeploy:*
       Resource:
         - '*'
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource:
+        - "*"
 
 functions:
 
@@ -31,3 +49,8 @@ functions:
           cors: true
           authorizer: Auth
     iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.BOOKS_TABLE}

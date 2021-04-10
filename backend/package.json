@@ -5,6 +5,7 @@
   "author": "evilvic",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.75",
+    "aws-sdk": "^2.884.0",
     "serverless-iam-roles-per-function": "^3.1.0",
     "serverless-webpack": "^5.4.0",
     "ts-loader": "^8.1.0",
@@ -12,8 +13,10 @@
     "webpack": "^5.30.0"
   },
   "dependencies": {
+    "aws-xray-sdk": "^3.2.0",
     "axios": "^0.21.1",
     "jsonwebtoken": "^8.5.1",
-    "source-map-support": "^0.5.19"
+    "source-map-support": "^0.5.19",
+    "uuid": "^8.3.2"
   }
 }

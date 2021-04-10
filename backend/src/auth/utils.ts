@@ -40,3 +40,10 @@ const certToPEM = cert => {
   cert = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----\n`
   return cert
 }
+
+export const getJwt = event => event.headers.Authorization.split(' ')[1]
+
+export const parseUserId = (jwtToken: string): string => {
+  const decodedJwt = decode(jwtToken) as JwtPayload
+  return decodedJwt.sub
+}
