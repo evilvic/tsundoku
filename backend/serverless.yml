@@ -19,6 +19,9 @@ provider:
 
 functions:
 
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
   CreateBook:
     handler: src/lambda/http/createBook.handler
     events:
@@ -26,4 +29,5 @@ functions:
           method: post
           path: books
           cors: true
+          authorizer: Auth
     iamRoleStatementsInherit: true

@@ -1,13 +1,19 @@
-export const handler = async (event) => {
+import 'source-map-support/register'
+import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
 
-  console.log(event.body)
+export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+
+  const newBook = JSON.parse(event.body)
+  
+  console.log(' -----> START BOOK CREATION >>>>> ', newBook)
 
   try {
     
     return {
       statusCode: 201,
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
       },
       body: JSON.stringify({
         message: 'Lambda working correctly!'
@@ -19,7 +25,8 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true
       },
       body: JSON.stringify({
         message: 'Lambda fail.'
