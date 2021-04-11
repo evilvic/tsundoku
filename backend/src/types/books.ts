@@ -7,3 +7,7 @@ export interface BookItem {
   bookId: string
   createdAt: string
 }
+
+export interface User {
+  userId: string
+}

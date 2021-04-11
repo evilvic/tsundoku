@@ -23,3 +23,10 @@ export const createBook = async (
   })
 
 }
+
+export const getBooks = async (jwt: string): Promise<BookItem[]> => {
+
+  const userId = parseUserId(jwt)
+  return await bookAccess.getBooks({ userId })
+
+}
