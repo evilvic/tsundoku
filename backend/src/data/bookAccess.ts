@@ -57,4 +57,18 @@ export class BookAccess {
     return book as BookItem
   }
 
+  async deleteBook(book): Promise<BookItem> {
+    await this.docClient.delete({
+      TableName: this.booksTable,
+      Key:{
+        bookId: book.bookId
+      },
+      ConditionExpression: "userId = :userId",
+      ExpressionAttributeValues:{
+        ":userId" : book.userId
+      }
+    }).promise()
+    return book
+  }
+
 }

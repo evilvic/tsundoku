@@ -43,3 +43,12 @@ export const updateBook = async (
   return await bookAccess.updateBook({ bookId, userId, ...bookToUpdate })
 
 }
+
+export async function deleteBook(
+  bookId: string,
+  jwt: string): Promise<BookItem> {
+
+  const userId = parseUserId(jwt)
+  return await bookAccess.deleteBook({ userId, bookId })
+
+}
