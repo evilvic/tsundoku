@@ -15,8 +15,10 @@ import {
 } from 'semantic-ui-react'
 
 import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
+import { getBooks } from '../api/books-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
+import { Book } from '../types/Book'
 
 interface TodosProps {
   auth: Auth
@@ -24,16 +26,20 @@ interface TodosProps {
 }
 
 interface TodosState {
+  books: Book[]
   todos: Todo[]
   newTodoName: string
   loadingTodos: boolean
+  loadingBooks: boolean
 }
 
 export class Todos extends React.PureComponent<TodosProps, TodosState> {
   state: TodosState = {
+    books: [],
     todos: [],
     newTodoName: '',
-    loadingTodos: true
+    loadingTodos: true,
+    loadingBooks: true
   }
 
   handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,24 +97,23 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   async componentDidMount() {
     try {
-      const todos = await getTodos(this.props.auth.getIdToken())
+      const books = await getBooks(this.props.auth.getIdToken())
       this.setState({
-        todos,
-        loadingTodos: false
+        books,
+        loadingBooks: false
       })
     } catch (e) {
-      alert(`Failed to fetch todos: ${e.message}`)
+      alert(`Failed to fetch books: ${e.message}`)
     }
   }
 
   render() {
     return (
-      <div>
-        <Header as="h1">TODOs</Header>
-
+      <div className='books_screen'>
+        <h1>TSUNDOKU</h1>
+        {/* <Header as="h1">TODOs</Header> */}
         {this.renderCreateTodoInput()}
-
-        {this.renderTodos()}
+        {this.renderBooks()}
       </div>
     )
   }
@@ -138,8 +143,8 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     )
   }
 
-  renderTodos() {
-    if (this.state.loadingTodos) {
+  renderBooks() {
+    if (this.state.loadingBooks) {
       return this.renderLoading()
     }
 
@@ -150,7 +155,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     return (
       <Grid.Row>
         <Loader indeterminate active inline="centered">
-          Loading TODOs
+          Loading books...
         </Loader>
       </Grid.Row>
     )
@@ -158,6 +163,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   renderTodosList() {
     return (
+      <>
       <Grid padded>
         {this.state.todos.map((todo, pos) => {
           return (
@@ -202,6 +208,35 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
           )
         })}
       </Grid>
+      <div>
+        {this.state.books.map((book) => {
+          return (
+            <div 
+              key={book.bookId}
+              className='book_card'
+            >
+              <img 
+                src={book.cover}
+                className='book_card-img'
+              />
+              <div className='book_card-details'>
+                <h2>{book.title}</h2>
+                <p>{book.author}</p>
+                <p>{
+                  book.rate === 0 ? '☆☆☆☆☆' : 
+                  book.rate === 1 ? '★☆☆☆☆' :
+                  book.rate === 2 ? '★★☆☆☆' :
+                  book.rate === 3 ? '★★★☆☆' :
+                  book.rate === 4 ? '★★★★☆' :
+                  '★★★★★'
+                }</p>
+              </div>
+              <button>{book.read ? '✔' : ''}</button>
+            </div>
+          )
+        })}
+      </div>
+      </>
     )
   }
 

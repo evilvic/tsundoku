@@ -15,11 +15,15 @@ export class LogIn extends React.PureComponent<LogInProps, LogInState> {
 
   render() {
     return (
-      <div>
-        <h1>Please log in</h1>
-
-        <Button onClick={this.onLogin} size="huge" color="olive">
-          Log in
+      <div className='login_screen'>
+        <h1>TSUNDOKU</h1>
+        <p>Stack your books!</p>
+        <img 
+          src='https://sls-tsundoku-images-dev.s3.amazonaws.com/app/start.jpg'
+          className='login_screen-img'
+        />
+        <Button onClick={this.onLogin} size="huge" color="purple">
+          START
         </Button>
       </div>
     )
