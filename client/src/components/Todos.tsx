@@ -7,15 +7,13 @@ import {
   Checkbox,
   Divider,
   Grid,
-  Header,
   Icon,
-  Input,
   Image,
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
-import { getBooks } from '../api/books-api'
+import { deleteTodo, patchTodo } from '../api/todos-api'
+import { createBook, getBooks } from '../api/books-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 import { Book } from '../types/Book'
@@ -24,45 +22,74 @@ interface TodosProps {
   auth: Auth
   history: History
 }
-
-interface TodosState {
+interface BooksState {
   books: Book[]
   todos: Todo[]
   newTodoName: string
   loadingTodos: boolean
   loadingBooks: boolean
+  showNewBook: boolean
+  newBookTitle: string
+  newBookAuthor: string
+  newBookPages: number
+  newBookCover: string
 }
 
-export class Todos extends React.PureComponent<TodosProps, TodosState> {
-  state: TodosState = {
+export class Todos extends React.PureComponent<TodosProps, BooksState> {
+  state: BooksState = {
     books: [],
     todos: [],
     newTodoName: '',
     loadingTodos: true,
-    loadingBooks: true
+    loadingBooks: true,
+    showNewBook: false,
+    newBookTitle: '',
+    newBookAuthor: '',
+    newBookPages: 0,
+    newBookCover: 'https://sls-tsundoku-images-dev.s3.amazonaws.com/app/default.jpg'
   }
 
-  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ newTodoName: event.target.value })
+
+  // -----> FUNCTIONS TO HANDLE NEW BOOK INPUTS >>>>>
+  handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      newBookTitle: event.target.value
+    })
   }
+  handleAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      newBookAuthor: event.target.value
+    })
+  }
+  handlePagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      newBookPages: Number(event.target.value)
+    })
+  }
+  ///// <<<<< /////
 
   onEditButtonClick = (todoId: string) => {
     this.props.history.push(`/todos/${todoId}/edit`)
   }
 
-  onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
+  onBookCreate = async () => {
     try {
-      const dueDate = this.calculateDueDate()
-      const newTodo = await createTodo(this.props.auth.getIdToken(), {
-        name: this.state.newTodoName,
-        dueDate
+      const newBook = await createBook(this.props.auth.getIdToken(), {
+        title: this.state.newBookTitle,
+        author: this.state.newBookAuthor,
+        pages: this.state.newBookPages,
+        cover: this.state.newBookCover
       })
       this.setState({
-        todos: [...this.state.todos, newTodo],
-        newTodoName: ''
+        books: [newBook, ...this.state.books],
+        newBookTitle: '',
+        newBookAuthor: '',
+        newBookPages: 0,
+        newBookCover: '',
+        showNewBook: false
       })
     } catch {
-      alert('Todo creation failed')
+      alert('Book creation failed')
     }
   }
 
@@ -95,6 +122,13 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     }
   }
 
+  showNewBook = () => {
+    this.setState({
+      showNewBook: true
+    })
+  }
+
+
   async componentDidMount() {
     try {
       const books = await getBooks(this.props.auth.getIdToken())
@@ -111,43 +145,58 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     return (
       <div className='books_screen'>
         <h1>TSUNDOKU</h1>
-        {/* <Header as="h1">TODOs</Header> */}
-        {this.renderCreateTodoInput()}
+        {this.renderNewBookButton()}
         {this.renderBooks()}
+        {this.state.showNewBook ? this.renderNewBook() : null}
       </div>
     )
   }
 
-  renderCreateTodoInput() {
+  renderNewBookButton() {
     return (
-      <Grid.Row>
-        <Grid.Column width={16}>
-          <Input
-            action={{
-              color: 'teal',
-              labelPosition: 'left',
-              icon: 'add',
-              content: 'New task',
-              onClick: this.onTodoCreate
-            }}
-            fluid
-            actionPosition="left"
-            placeholder="To change the world..."
-            onChange={this.handleNameChange}
-          />
-        </Grid.Column>
-        <Grid.Column width={16}>
-          <Divider />
-        </Grid.Column>
-      </Grid.Row>
+      <button 
+        onClick={this.showNewBook}
+        className='new_book-btn'
+      >
+        <span style={{fontSize: '25px'}}>+</span>
+        <span style={{fontSize: '15px', marginTop: '2px', fontWeight: 'bold'}}>New book</span>
+      </button>
+    )
+  }
+
+  renderNewBook() {
+    return (
+      <div className='new_book'>
+        <input 
+          type='file'
+        />
+        <label>Title:</label>
+        <input 
+          type='text'
+          value={this.state.newBookTitle}
+          onChange={this.handleTitleChange}
+        />
+        <label>Author:</label>
+        <input 
+          type='text'
+          value={this.state.newBookAuthor}
+          onChange={this.handleAuthorChange}
+        />
+        <label>Pages</label>
+        <input 
+          type='number'
+          value={this.state.newBookPages}
+          onChange={this.handlePagesChange}
+        />
+        <button onClick={this.onBookCreate}>Create</button>
+      </div>
     )
   }
 
   renderBooks() {
     if (this.state.loadingBooks) {
       return this.renderLoading()
-    }
-
+    } 
     return this.renderTodosList()
   }
 
@@ -208,7 +257,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
           )
         })}
       </Grid>
-      <div>
+      <div className='books_list'>
         {this.state.books.map((book) => {
           return (
             <div 

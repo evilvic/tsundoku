@@ -3,6 +3,7 @@ export interface Book {
   createdAt: string
   title: string
   author: string
+  pages: number
   cover: string
   read: boolean
   rate: number

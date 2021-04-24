@@ -1,4 +1,4 @@
-export interface CreateTodoRequest {
+export interface CreateBookRequest {
   title: string
   author: string
   pages: number
