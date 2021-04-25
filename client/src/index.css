@@ -46,7 +46,8 @@
   margin-bottom: 30px;
 }
 
-.books_screen {
+.books_screen,
+.edit_book {
   position: relative;
   justify-content: flex-start;
   padding: 20px 0 0;
@@ -148,7 +149,8 @@
   font-size: 15px
 }
 
-.create-btn {
+.create-btn,
+.delete-btn {
   background: #A333C8;
   width: 120px;
   height: 40px;
@@ -165,6 +167,11 @@
   font-size: 15px;
 }
 
+.delete-btn {
+  background: lightcoral;
+  color: white;
+}
+
 .cancel-btn {
   border: none;
   background: none;
@@ -174,4 +181,17 @@
   font-weight: bold;
   font-size: 15px;
   color: lightcoral;
+}
+
+.rate_star-btn {
+  width: 30px;
+  height: 30px;
+  background: none;
+  border: none;
+  font-size: 25px;
+  color: yellowgreen;
+}
+
+.update {
+  margin-bottom: 15px;
 }

@@ -98,8 +98,13 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
     })
   }
 
-  onEditButtonClick = (todoId: string) => {
-    this.props.history.push(`/todos/${todoId}/edit`)
+  onEditButtonClick = (book: Book) => {
+    this.props.history.push({
+      pathname: `/books/${book.bookId}/edit`,
+      state: {
+        ...book
+      }
+    })
   }
 
   onBookCreate = async () => {
@@ -288,7 +293,7 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
                 <Button
                   icon
                   color="blue"
-                  onClick={() => this.onEditButtonClick(todo.todoId)}
+                  // onClick={() => this.onEditButtonClick(todo.todoId)}
                 >
                   <Icon name="pencil" />
                 </Button>
@@ -328,7 +333,7 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
             <div 
               key={book.bookId}
               className='book_card'
-              onClick={() => this.onEditButtonClick(book.bookId)}
+              onClick={() => this.onEditButtonClick(book)}
             >
               <img 
                 src={book.cover}
