@@ -17,7 +17,13 @@ import { createBook, getBooks } from '../api/books-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 import { Book } from '../types/Book'
+import { getUploadUrl, uploadFile } from '../api/books-api'
 
+enum UploadState {
+  NoUpload,
+  FetchingPresignedUrl,
+  UploadingFile,
+}
 interface TodosProps {
   auth: Auth
   history: History
@@ -29,6 +35,8 @@ interface BooksState {
   loadingTodos: boolean
   loadingBooks: boolean
   showNewBook: boolean
+  file: any
+  uploadState: UploadState
   newBookTitle: string
   newBookAuthor: string
   newBookPages: number
@@ -43,14 +51,37 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
     loadingTodos: true,
     loadingBooks: true,
     showNewBook: false,
+    file: undefined,
+    uploadState: UploadState.NoUpload,
     newBookTitle: '',
     newBookAuthor: '',
     newBookPages: 0,
-    newBookCover: 'https://sls-tsundoku-images-dev.s3.amazonaws.com/app/default.jpg'
+    newBookCover: ''
   }
 
+  handleImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files) return
+    this.setState({
+      file: files[0]
+    })
+    this.setUploadState(UploadState.FetchingPresignedUrl)
+    const { uploadUrl, imageUrl } = await getUploadUrl(this.props.auth.getIdToken())
+    setTimeout(() => {
+      this.setState({
+        newBookCover: imageUrl
+      })
+    }, 1000)
+    this.setUploadState(UploadState.UploadingFile)
+    await uploadFile(uploadUrl, this.state.file)
+  }
 
-  // -----> FUNCTIONS TO HANDLE NEW BOOK INPUTS >>>>>
+  setUploadState(uploadState: UploadState) {
+    this.setState({
+      uploadState
+    })
+  }
+
   handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       newBookTitle: event.target.value
@@ -66,7 +97,6 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
       newBookPages: Number(event.target.value)
     })
   }
-  ///// <<<<< /////
 
   onEditButtonClick = (todoId: string) => {
     this.props.history.push(`/todos/${todoId}/edit`)
@@ -78,7 +108,7 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
         title: this.state.newBookTitle,
         author: this.state.newBookAuthor,
         pages: this.state.newBookPages,
-        cover: this.state.newBookCover
+        cover: this.state.newBookCover === '' ? 'https://sls-tsundoku-images-dev.s3.amazonaws.com/app/default.jpg' : this.state.newBookCover
       })
       this.setState({
         books: [newBook, ...this.state.books],
@@ -91,6 +121,12 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
     } catch {
       alert('Book creation failed')
     }
+  }
+
+  backToBooks = () => {
+    this.setState({
+      showNewBook: false
+    })
   }
 
   onTodoDelete = async (todoId: string) => {
@@ -167,28 +203,47 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
   renderNewBook() {
     return (
       <div className='new_book'>
+        <h1>TSUNDOKU</h1>
+        <p>New book</p>
+        <label htmlFor='upload'>
+          {this.state.newBookCover === '' ?
+            <div className='new_cover-ph'>
+              <span style={{fontSize: '50px', color: 'white'}}>+</span>
+            </div>
+            :
+            <img className='new_cover-ph' src={this.state.newBookCover}/>
+          }
+          <input 
+            style={{display: 'none'}}
+            id='upload'
+            type='file'
+            accept="image/*"
+            onChange={this.handleImage}
+          />
+        </label>
+        <label className='book_label'>TITLE</label>
         <input 
-          type='file'
-        />
-        <label>Title:</label>
-        <input 
+          className='book_input'
           type='text'
           value={this.state.newBookTitle}
           onChange={this.handleTitleChange}
         />
-        <label>Author:</label>
+        <label className='book_label'>AUTHOR</label>
         <input 
+          className='book_input'
           type='text'
           value={this.state.newBookAuthor}
           onChange={this.handleAuthorChange}
         />
-        <label>Pages</label>
+        <label className='book_label'>PAGES</label>
         <input 
+          className='book_input'
           type='number'
           value={this.state.newBookPages}
           onChange={this.handlePagesChange}
         />
-        <button onClick={this.onBookCreate}>Create</button>
+        <button onClick={this.onBookCreate} className='create-btn'>Create</button>
+        <button onClick={this.backToBooks} className='cancel-btn'>Cancel</button>
       </div>
     )
   }
@@ -257,12 +312,23 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
           )
         })}
       </Grid>
+      {this.state.books.length === 0 ? 
+      <div className='no_books'>
+        <img 
+          src='https://sls-tsundoku-images-dev.s3.amazonaws.com/app/no-books.jpg'
+          className='no_books-img'
+          style={{marginTop: '70px'}}
+        />
+        <p style={{textAlign: 'center'}}>Still don't have books? Add a new one!</p>
+      </div>
+      :
       <div className='books_list'>
         {this.state.books.map((book) => {
           return (
             <div 
               key={book.bookId}
               className='book_card'
+              onClick={() => this.onEditButtonClick(book.bookId)}
             >
               <img 
                 src={book.cover}
@@ -285,6 +351,7 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
           )
         })}
       </div>
+      }
       </>
     )
   }

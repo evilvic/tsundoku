@@ -23,7 +23,7 @@ export class LogIn extends React.PureComponent<LogInProps, LogInState> {
           className='login_screen-img'
         />
         <Button onClick={this.onLogin} size="huge" color="purple">
-          START
+          Start
         </Button>
       </div>
     )

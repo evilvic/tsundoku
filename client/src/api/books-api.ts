@@ -68,17 +68,21 @@ export async function deleteTodo(
   })
 }
 
+interface GetUploadUrlResponse {
+  uploadUrl: string
+  imageUrl: string
+}
+
 export async function getUploadUrl(
-  idToken: string,
-  todoId: string
-): Promise<string> {
-  const response = await Axios.post(`${apiEndpoint}/todos/${todoId}/attachment`, '', {
+  idToken: string
+): Promise<GetUploadUrlResponse> {
+  const response = await Axios.post(`${apiEndpoint}/books/cover`, '', {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
     }
   })
-  return response.data.uploadUrl
+  return response.data
 }
 
 export async function uploadFile(uploadUrl: string, file: Buffer): Promise<void> {

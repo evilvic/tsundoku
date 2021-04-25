@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Form, Button } from 'semantic-ui-react'
 import Auth from '../auth/Auth'
-import { getUploadUrl, uploadFile } from '../api/todos-api'
+import { getUploadUrl, uploadFile } from '../api/books-api'
 
 enum UploadState {
   NoUpload,
@@ -51,7 +51,7 @@ export class EditTodo extends React.PureComponent<
       }
 
       this.setUploadState(UploadState.FetchingPresignedUrl)
-      const uploadUrl = await getUploadUrl(this.props.auth.getIdToken(), this.props.match.params.todoId)
+      const {uploadUrl} = await getUploadUrl(this.props.auth.getIdToken())
 
       this.setUploadState(UploadState.UploadingFile)
       await uploadFile(uploadUrl, this.state.file)
@@ -72,9 +72,7 @@ export class EditTodo extends React.PureComponent<
 
   render() {
     return (
-      <div>
-        <h1>Upload new image</h1>
-
+      <div className='edit_book'>
         <Form onSubmit={this.handleSubmit}>
           <Form.Field>
             <label>File</label>

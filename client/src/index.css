@@ -13,8 +13,9 @@
 }
 
 .login_screen,
-.books_screen {
-  //border: 1px solid black;
+.books_screen,
+.edit_book {
+  border: 1px solid lightgray;
   width: 320px;
   height: 568px;
   display: flex;
@@ -35,9 +36,11 @@
   border-radius: 3px;
   padding: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.login_screen-img {
+.login_screen-img,
+.no_books-img {
   width: 300px;
   min-height: 225px;
   margin-bottom: 30px;
@@ -68,6 +71,7 @@
   width: 50px;
   min-height: 70px;
   height: 70px;
+  object-fit: cover;
 }
 
 .book_card-details {
@@ -101,7 +105,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  border-right: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  padding-top: 20px;
 }
 
 .books_list {
@@ -109,4 +116,62 @@
   width: 320px;
   max-height: 500px;
   overflow-y: scroll;
+}
+
+.new_cover-ph {
+  width: 100px;
+  height: 140px;
+  background: lightgray;
+  border-radius: 3px;
+  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.book_label {
+  margin-bottom: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  color: lightslategray;
+}
+
+.book_input {
+  margin-bottom: 10px;
+  border: 1px solid lightgray;
+  width: 280px;
+  height: 35px;
+  text-align: center;
+  border-radius: 3px;
+  font-size: 15px
+}
+
+.create-btn {
+  background: #A333C8;
+  width: 120px;
+  height: 40px;
+  color: white;
+  display: flex;
+  align-items: center;
+  border: none;
+  justify-content: space-around;
+  border-radius: 3px;
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.cancel-btn {
+  border: none;
+  background: none;
+  width: 120px;
+  height: 40px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+  color: lightcoral;
 }
