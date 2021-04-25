@@ -3,7 +3,7 @@ import { Todo } from '../types/Todo';
 import { Book } from '../types/Book'
 import { CreateBookRequest } from '../types/CreateBookRequest'
 import Axios from 'axios'
-import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
+import { UpdateBookRequest } from '../types/UpdateBookRequest';
 
 export async function getTodos(idToken: string): Promise<Todo[]> {
   console.log('Fetching todos')
@@ -43,12 +43,12 @@ export async function createBook(
   return response.data.item
 }
 
-export async function patchTodo(
+export async function patchBook(
   idToken: string,
-  todoId: string,
-  updatedTodo: UpdateTodoRequest
+  bookId: string,
+  updatedBook: UpdateBookRequest
 ): Promise<void> {
-  await Axios.patch(`${apiEndpoint}/todos/${todoId}`, JSON.stringify(updatedTodo), {
+  await Axios.patch(`${apiEndpoint}/books/${bookId}`, JSON.stringify(updatedBook), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
@@ -56,11 +56,11 @@ export async function patchTodo(
   })
 }
 
-export async function deleteTodo(
+export async function deleteBook(
   idToken: string,
-  todoId: string
+  bookId: string
 ): Promise<void> {
-  await Axios.delete(`${apiEndpoint}/todos/${todoId}`, {
+  await Axios.delete(`${apiEndpoint}/books/${bookId}`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`

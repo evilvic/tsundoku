@@ -12,7 +12,6 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { deleteTodo, patchTodo } from '../api/todos-api'
 import { createBook, getBooks } from '../api/books-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
@@ -134,35 +133,6 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
     })
   }
 
-  onTodoDelete = async (todoId: string) => {
-    try {
-      await deleteTodo(this.props.auth.getIdToken(), todoId)
-      this.setState({
-        todos: this.state.todos.filter(todo => todo.todoId != todoId)
-      })
-    } catch {
-      alert('Todo deletion failed')
-    }
-  }
-
-  onTodoCheck = async (pos: number) => {
-    try {
-      const todo = this.state.todos[pos]
-      await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
-        name: todo.name,
-        dueDate: todo.dueDate,
-        done: !todo.done
-      })
-      this.setState({
-        todos: update(this.state.todos, {
-          [pos]: { done: { $set: !todo.done } }
-        })
-      })
-    } catch {
-      alert('Todo deletion failed')
-    }
-  }
-
   showNewBook = () => {
     this.setState({
       showNewBook: true
@@ -273,50 +243,7 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
   renderTodosList() {
     return (
       <>
-      <Grid padded>
-        {this.state.todos.map((todo, pos) => {
-          return (
-            <Grid.Row key={todo.todoId}>
-              <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
-                  onChange={() => this.onTodoCheck(pos)}
-                  checked={todo.done}
-                />
-              </Grid.Column>
-              <Grid.Column width={10} verticalAlign="middle">
-                {todo.name}
-              </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                {todo.dueDate}
-              </Grid.Column>
-              <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="blue"
-                  // onClick={() => this.onEditButtonClick(todo.todoId)}
-                >
-                  <Icon name="pencil" />
-                </Button>
-              </Grid.Column>
-              <Grid.Column width={1} floated="right">
-                <Button
-                  icon
-                  color="red"
-                  onClick={() => this.onTodoDelete(todo.todoId)}
-                >
-                  <Icon name="delete" />
-                </Button>
-              </Grid.Column>
-              {todo.attachmentUrl && (
-                <Image src={todo.attachmentUrl} size="small" wrapped />
-              )}
-              <Grid.Column width={16}>
-                <Divider />
-              </Grid.Column>
-            </Grid.Row>
-          )
-        })}
-      </Grid>
+      
       {this.state.books.length === 0 ? 
       <div className='no_books'>
         <img 

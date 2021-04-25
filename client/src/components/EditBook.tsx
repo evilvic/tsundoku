@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { History } from 'history'
 import Auth from '../auth/Auth'
-import { getUploadUrl, uploadFile } from '../api/books-api'
+import { patchBook, deleteBook, getUploadUrl, uploadFile } from '../api/books-api'
 
 enum UploadState {
   NoUpload,
@@ -20,7 +20,7 @@ interface EditBookProps {
   history: History
 }
 
-interface EditTodoState {
+interface EditBookState {
   file: any
   uploadState: UploadState
   title: string
@@ -33,9 +33,9 @@ interface EditTodoState {
 
 export class EditBook extends React.PureComponent<
   EditBookProps,
-  EditTodoState
+  EditBookState
 > {
-  state: EditTodoState = {
+  state: EditBookState = {
     file: undefined,
     uploadState: UploadState.NoUpload,
     title: '',
@@ -74,11 +74,13 @@ export class EditBook extends React.PureComponent<
       title: event.target.value
     })
   }
+
   handleAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       author: event.target.value
     })
   }
+
   handlePagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       pages: Number(event.target.value)
@@ -91,7 +93,27 @@ export class EditBook extends React.PureComponent<
     })
   }
 
+  onBookDelete = async () => {
+    await deleteBook(this.props.auth.getIdToken(), this.props.match.params.bookId)
+    this.props.history.push('/')
+  }
 
+  onBookUpdate = async () => {
+    const { title, author, pages, cover, read, rate } = this.state
+    try {
+      await patchBook(this.props.auth.getIdToken(), this.props.match.params.bookId, {
+        title,
+        author,
+        pages,
+        cover,
+        read,
+        rate
+      })
+      this.props.history.push('/')
+    } catch {
+      alert('Book creation failed')
+    }
+  }
 
   componentDidMount() {
     const { title, author, cover, pages, rate, read } = this.props.location.state
@@ -141,21 +163,18 @@ export class EditBook extends React.PureComponent<
           <button className='rate_star-btn' onClick={() => this.handleRate(4)}>{this.state.rate >= 4 ? '★' : '☆'}</button>
           <button className='rate_star-btn' onClick={() => this.handleRate(5)}>{this.state.rate >= 5 ? '★' : '☆'}</button>
         </div>
-        {/* <label className='book_label'>TITLE</label> */}
         <input 
           className='book_input update'
           type='text'
           value={this.state.title}
           onChange={this.handleTitleChange}
         />
-        {/* <label className='book_label'>AUTHOR</label> */}
         <input 
           className='book_input update'
           type='text'
           value={this.state.author}
           onChange={this.handleAuthorChange}
         />
-        {/* <label className='book_label'>PAGES</label> */}
         <input 
           className='book_input update'
           type='number'
@@ -163,8 +182,8 @@ export class EditBook extends React.PureComponent<
           onChange={this.handlePagesChange}
         />
         <div style={{display: 'flex', width: '280px', justifyContent: 'space-evenly'}}>
-          <button onClick={() => console.log('no')} className='create-btn'>Update</button>
-          <button onClick={() => console.log('no')} className='delete-btn'>Delete</button>
+          <button onClick={() => this.onBookUpdate()} className='create-btn'>Update</button>
+          <button onClick={() => this.onBookDelete()} className='delete-btn'>Delete</button>
         </div>
         <button onClick={() => this.props.history.push('/')} className='cancel-btn'>Cancel</button>
       </div>
