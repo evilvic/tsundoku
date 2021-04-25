@@ -115,6 +115,10 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
 
   backToBooks = () => {
     this.setState({
+      newBookTitle: '',
+      newBookAuthor: '',
+      newBookPages: 0,
+      newBookCover: '',
       showNewBook: false
     })
   }
@@ -239,7 +243,11 @@ export class Books extends React.PureComponent<BooksProps, BooksState> {
         </div>
         :
         <div className='books_list'>
-          {this.state.books.map((book) => {
+          {this.state.books.sort((a, b) => {
+            if (a.createdAt > b.createdAt) return -1
+            if (a.createdAt < b.createdAt) return 1
+            return 0
+          }).map((book) => {
             return (
               <div 
                 key={book.bookId}
