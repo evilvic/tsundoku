@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
-import { Link, Route, Router, Switch } from 'react-router-dom'
-import { Grid, Menu, Segment } from 'semantic-ui-react'
-
+import { Route, Router, Switch } from 'react-router-dom'
+import { Menu } from 'semantic-ui-react'
 import Auth from './auth/Auth'
 import { EditBook } from './components/EditBook'
 import { LogIn } from './components/LogIn'
 import { NotFound } from './components/NotFound'
-import { Todos } from './components/Todos'
+import { Books } from './components/Books'
 
 export interface AppProps {}
 
@@ -20,7 +19,6 @@ export interface AppState {}
 export default class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props)
-
     this.handleLogin = this.handleLogin.bind(this)
     this.handleLogout = this.handleLogout.bind(this)
   }
@@ -37,39 +35,24 @@ export default class App extends Component<AppProps, AppState> {
     return (
       <div className='app'>
         <Router history={this.props.history}>
-          {/* this.generateMenu() */}
-
+          {this.logOutButton()}
           {this.generateCurrentPage()}
         </Router>
       </div>
     )
   }
 
-  generateMenu() {
-    return (
-      <Menu>
-        <Menu.Item name="home">
-          <Link to="/">Home</Link>
-        </Menu.Item>
-
-        <Menu.Menu position="right">{this.logInLogOutButton()}</Menu.Menu>
-      </Menu>
-    )
-  }
-
-  logInLogOutButton() {
+  logOutButton() {
     if (this.props.auth.isAuthenticated()) {
       return (
-        <Menu.Item name="logout" onClick={this.handleLogout}>
-          Log Out
-        </Menu.Item>
+        <Menu className='logout'>
+          <Menu.Item name="logout" onClick={this.handleLogout}>
+            Log Out
+          </Menu.Item>
+        </Menu>
       )
     } else {
-      return (
-        <Menu.Item name="login" onClick={this.handleLogin}>
-          Log In
-        </Menu.Item>
-      )
+      return null
     }
   }
 
@@ -84,10 +67,9 @@ export default class App extends Component<AppProps, AppState> {
           path="/"
           exact
           render={props => {
-            return <Todos {...props} auth={this.props.auth} />
+            return <Books {...props} auth={this.props.auth} />
           }}
         />
-
         <Route
           path="/books/:bookId/edit"
           exact
@@ -95,7 +77,6 @@ export default class App extends Component<AppProps, AppState> {
             return <EditBook {...props} auth={this.props.auth} />
           }}
         />
-
         <Route component={NotFound} />
       </Switch>
     )

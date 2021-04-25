@@ -195,3 +195,9 @@
 .update {
   margin-bottom: 15px;
 }
+
+.logout {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+}

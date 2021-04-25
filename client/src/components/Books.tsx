@@ -1,37 +1,24 @@
 import dateFormat from 'dateformat'
 import { History } from 'history'
-import update from 'immutability-helper'
 import * as React from 'react'
-import {
-  Button,
-  Checkbox,
-  Divider,
-  Grid,
-  Icon,
-  Image,
-  Loader
-} from 'semantic-ui-react'
-
-import { createBook, getBooks } from '../api/books-api'
+import { Grid, Loader } from 'semantic-ui-react'
+import { createBook, getBooks,getUploadUrl, uploadFile } from '../api/books-api'
 import Auth from '../auth/Auth'
-import { Todo } from '../types/Todo'
 import { Book } from '../types/Book'
-import { getUploadUrl, uploadFile } from '../api/books-api'
 
 enum UploadState {
   NoUpload,
   FetchingPresignedUrl,
   UploadingFile,
 }
-interface TodosProps {
+
+interface BooksProps {
   auth: Auth
   history: History
 }
+
 interface BooksState {
   books: Book[]
-  todos: Todo[]
-  newTodoName: string
-  loadingTodos: boolean
   loadingBooks: boolean
   showNewBook: boolean
   file: any
@@ -42,12 +29,9 @@ interface BooksState {
   newBookCover: string
 }
 
-export class Todos extends React.PureComponent<TodosProps, BooksState> {
+export class Books extends React.PureComponent<BooksProps, BooksState> {
   state: BooksState = {
     books: [],
-    todos: [],
-    newTodoName: '',
-    loadingTodos: true,
     loadingBooks: true,
     showNewBook: false,
     file: undefined,
@@ -86,11 +70,13 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
       newBookTitle: event.target.value
     })
   }
+
   handleAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       newBookAuthor: event.target.value
     })
   }
+
   handlePagesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       newBookPages: Number(event.target.value)
@@ -138,7 +124,6 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
       showNewBook: true
     })
   }
-
 
   async componentDidMount() {
     try {
@@ -243,55 +228,48 @@ export class Todos extends React.PureComponent<TodosProps, BooksState> {
   renderTodosList() {
     return (
       <>
-      
-      {this.state.books.length === 0 ? 
-      <div className='no_books'>
-        <img 
-          src='https://sls-tsundoku-images-dev.s3.amazonaws.com/app/no-books.jpg'
-          className='no_books-img'
-          style={{marginTop: '70px'}}
-        />
-        <p style={{textAlign: 'center'}}>Still don't have books? Add a new one!</p>
-      </div>
-      :
-      <div className='books_list'>
-        {this.state.books.map((book) => {
-          return (
-            <div 
-              key={book.bookId}
-              className='book_card'
-              onClick={() => this.onEditButtonClick(book)}
-            >
-              <img 
-                src={book.cover}
-                className='book_card-img'
-              />
-              <div className='book_card-details'>
-                <h2>{book.title}</h2>
-                <p>{book.author}</p>
-                <p>{
-                  book.rate === 0 ? '☆☆☆☆☆' : 
-                  book.rate === 1 ? '★☆☆☆☆' :
-                  book.rate === 2 ? '★★☆☆☆' :
-                  book.rate === 3 ? '★★★☆☆' :
-                  book.rate === 4 ? '★★★★☆' :
-                  '★★★★★'
-                }</p>
+        {this.state.books.length === 0 ? 
+        <div className='no_books'>
+          <img 
+            src='https://sls-tsundoku-images-dev.s3.amazonaws.com/app/no-books.jpg'
+            className='no_books-img'
+            style={{marginTop: '70px'}}
+          />
+          <p style={{textAlign: 'center'}}>Still don't have books? Add a new one!</p>
+        </div>
+        :
+        <div className='books_list'>
+          {this.state.books.map((book) => {
+            return (
+              <div 
+                key={book.bookId}
+                className='book_card'
+                onClick={() => this.onEditButtonClick(book)}
+              >
+                <img 
+                  src={book.cover}
+                  className='book_card-img'
+                />
+                <div className='book_card-details'>
+                  <h2>{book.title}</h2>
+                  <p>{book.author}</p>
+                  <p>{
+                    book.rate === 0 ? '☆☆☆☆☆' : 
+                    book.rate === 1 ? '★☆☆☆☆' :
+                    book.rate === 2 ? '★★☆☆☆' :
+                    book.rate === 3 ? '★★★☆☆' :
+                    book.rate === 4 ? '★★★★☆' :
+                    '★★★★★'
+                  }</p>
+                </div>
+                <button>{book.read ? '✔' : ''}</button>
               </div>
-              <button>{book.read ? '✔' : ''}</button>
-            </div>
-          )
-        })}
-      </div>
-      }
+            )
+          })}
+        </div>
+        }
       </>
     )
   }
 
-  calculateDueDate(): string {
-    const date = new Date()
-    date.setDate(date.getDate() + 7)
-
-    return dateFormat(date, 'yyyy-mm-dd') as string
-  }
 }

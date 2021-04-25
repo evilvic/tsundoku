@@ -3,9 +3,9 @@ import Auth from './auth/Auth'
 import { Router, Route } from 'react-router-dom'
 import Callback from './components/Callback'
 import createHistory from 'history/createBrowserHistory'
-import App from './App';
-const history = createHistory()
+import App from './App'
 
+const history = createHistory()
 const auth = new Auth(history)
 
 const handleAuthentication = (props: any) => {
