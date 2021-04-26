@@ -2,7 +2,7 @@
 
 Stack your books!
 
-**Tsundoku** is my capstone project for the *Cloud Developer Udacity Nanodegree*. It's a cloud-based app build with serverless framework, react and AWS. **Tsundoku** let you create a collection of the books you have stack in your house.
+**Tsundoku** is my capstone project for the *Cloud Developer Udacity Nanodegree*. It's a cloud-based app build with serverless framework, react and AWS. **Tsundoku** let you create a collection of the books you have stacked in your house.
 
 ## Screens
 
